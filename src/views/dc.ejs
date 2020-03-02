@@ -1,0 +1,61 @@
+
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Profile Page</title>
+  <% include partials/head %>
+</head>
+
+<body>
+  <br>
+  <br>
+  <br>
+  <br>
+  <div class="container">
+    <header class="text-center">
+      <h1>Administración de cursos</h1>
+    </header>
+    <hr>
+
+  </div>
+  <div class="container text-center">
+    <h2>Materias</h2>
+    <div class="row">
+      <div class="col-sm-4">
+        <div class="card" style="border:none">
+          <div class="card-body">
+            <div class="card-title">
+
+              <table>
+                <thead>
+                  <tr>
+                    <td>ID</td>
+                    <td>curso</td>
+                    <td>N# estudiantes</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <%for (let i = 0; i < arrayMaterias.length; i++) {%>
+                  <tr>
+
+                    <td style="width: 20px "><%= arrayMaterias[i]. materia.codigo%></td>
+                    <td style="width: 20px "><a href="/dc1/<%=user[0]._id%>/<%=arrayMaterias[i]._id%>"><%= arrayMaterias[i]. materia.nombre%></a></td>
+                    <td style="width: 50px "><%= Numestudiantes[i]%></td>
+                  </tr>
+                  <%}%>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div>
+
+
+</body>
+
+</html>

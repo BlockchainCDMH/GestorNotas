@@ -1,0 +1,41 @@
+
+
+<html>
+  <head>
+   <% include partials/head %>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="col-sm-6 mx-auto">
+          <div clas="card mt-5">
+            <div class="card-body">
+              <h1 class="text-center">Bienvenido
+              </h1> 
+              <% include partials/messages %>
+          <form action="/logina" method="post" style="border : none">
+
+              <label for="Tipo"><b>Administrador </b></label>
+
+              <div class="container">
+                <label class="fa fa-user" for="usuarioid"><b> Usuario</b></label>
+                <input class="form-control" type="text" placeholder="Ingrese su Usuario" name="usuarioid" required>
+
+                <label class="fa fa-lock" for="password"><b> Contraseña</b></label>
+                <input class="form-control" type="password" placeholder="Ingrese su contraseña" name="password" required>
+
+
+                <input type="submit" style="background-color: #0095dd; color: white; padding: 14px 20px;
+                  margin: 8px 0; border: none;
+                  cursor: pointer; width: 100%;"
+                  value="Ingresar"class="btn btn-jg">
+
+                  ¿no eres Administrador? ingresa en el módulo de <a href="/indexd"> Docentes</a> o al módulo de <a href="/indexe">estudiantes</a> 
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    </form>
+  </body>
+</html>

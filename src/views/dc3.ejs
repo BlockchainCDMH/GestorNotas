@@ -1,0 +1,264 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Profile Page</title>
+    <% include partials/head %>
+    <% include partials/blockchain %>
+    <% include partials/SmartContract %>
+</head>
+
+<body>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="container">
+        <header class="text-center">
+            <div class="container text-center">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="card" style="border:none">
+                            <div id="materia" data-test=></div>
+                            <h2>Materia: <%= materia[0].materia.nombre%></h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <hr>
+        <h1 id="NotasCreadas">Notas creadas:</h1>
+        <div class="container" style="text-align:center;">
+            <form class="GuardarCambios">
+                <table>
+                    <thead>
+                        <tr>
+                            <td>Porcentaje</td>
+                            <td>Nombre Nota</td>
+                            <td>Activa</td>
+
+                        </tr>
+                    </thead>
+                    <tbody id="tbbody">
+                    </tbody>
+                </table>
+                <input id="GC" type="submit" value="Guardar cambios" disabled>
+            </form>
+        </div>
+
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="card" style="border:none">
+                        <a href="/dc1/<%=user[0]._id%>/<%=materia[0]._id%>"
+                            style="background-color: #0095dd; color: white; padding: 14px 20px; margin: 8px 0; border: none; cursor: pointer; width: 50%;"
+                            class="btn btn-jg">Volver</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+
+
+        var idmateria = "<%= materia[0]._id %>";
+        var iduser = "<%=user[0]._id%>";
+        var idprofe = "<%=profe._id%>";
+        var arrayIdsEstado = [];
+        var acu=0;
+
+        let cantidad;
+
+        contract.methods.GetNotasTotalesMateria(idmateria).call()
+            .then(
+                async function (ArrayResult) {
+                    consultarnota(ArrayResult);
+                }
+            )
+
+
+
+        async function consultarnota(ArrayResult) {
+            var tablebody = document.getElementById('tbbody');
+            for (let i = 0; i < ArrayResult.length; i++) {
+                contract.methods.GetNotaGeneral(ArrayResult[i]).call().then(async function (result) { creartabla(result, tablebody, i); });
+            }
+
+        }
+
+        async function creartabla(result, tablebody, i) {
+            NC = 4;
+            var tr1 = document.createElement('tr');
+            for (let j = 0; j < NC; j++) {
+                var x = 0;
+                if (j == 0) {
+
+                    x = j + 3 * i;
+                    var td2 = document.createElement('td');
+                    var valor = document.createElement("INPUT");
+                    valor.setAttribute("type", "number");
+                    valor.setAttribute("min", "1");
+                    valor.setAttribute("max", "100");
+                    valor.setAttribute("class", "center-block");
+                    valor.setAttribute("step", "1");
+                    valor.setAttribute("style", "width: 60px;");
+                    valor.setAttribute("value", result[j]);
+                    valor.setAttribute("id", x);
+                    valor.setAttribute("default", result[j]);
+                    td2.appendChild(valor);
+                    tr1.appendChild(td2);
+                } else {
+                    if (j == 1) {
+                        x = j + 3 * i;
+                        var td2 = document.createElement('td');
+                        var valor = document.createElement("INPUT");
+                        valor.setAttribute("type", "text");
+                        valor.setAttribute("style", "width: 300px;");
+                        valor.setAttribute("class", "center-block");
+                        valor.setAttribute("value", result[j]);
+                        valor.setAttribute("id", x);
+                        valor.setAttribute("default", result[j]);
+                        td2.appendChild(valor);
+                        tr1.appendChild(td2);
+                    } else {
+                        if (j == 2) {
+
+                        } else {
+                            if (j == 3) {
+                                x = j + 3 * i - 1;
+                                var td2 = document.createElement('td');
+                                var valor = document.createElement("INPUT");
+                                valor.setAttribute("type", "checkbox");
+                                valor.setAttribute("id", x);
+
+                                if (result[j] == true) {
+                                    valor.setAttribute("checked", "checked");
+                                    valor.setAttribute("default", "on");
+                                }
+                                valor.setAttribute("class", "center-block");
+                                valor.setAttribute("style", "transform : scale(1.5);");
+                                td2.appendChild(valor);
+                                tr1.appendChild(td2);
+                            }
+                        }
+                    }
+                }
+            }
+            tablebody.appendChild(tr1);
+            document.getElementById("GC").disabled = false;
+        }
+
+        $('.GuardarCambios').on('submit', async function (event) {
+            event.preventDefault()
+            var entradas = document.getElementsByClassName("center-block");
+            var stop = 0;
+            var run = 0;
+            async function CambiarNotas(ArrayResult, accounts) {
+                arrayIdsEstado=[];
+                for (let i = 0; i < entradas.length; i++) {
+                    var x = document.getElementById(i);
+
+                    if (i % 3 != 2) {
+                        if (x.value != x.defaultValue) {
+                            stop++;
+                        }
+                    } else {
+                        if (x.checked == true) {
+                            arrayIdsEstado.push(parseInt(x.id) - 2);
+                        }
+                        if (x.checked != x.defaultChecked) {
+                            stop++;
+
+                        }
+                    }
+                }
+                acu=0;
+                for (let i = 0; i < arrayIdsEstado.length; i++) {
+                    var x = document.getElementById(arrayIdsEstado[i]);
+                    acu=acu+parseInt(x.value);
+
+                }
+                if (acu<=100) {
+                    var fechaHora = new Date();
+                    var fecha = fechaHora.getDate() + "/" + fechaHora.getMonth() + "/" + fechaHora.getFullYear() + "  " + fechaHora.getHours() + ":" + fechaHora.getMinutes();
+                    for (let i = 0; i <= entradas.length - 1; i++) {
+                        y = Math.trunc(i / 3);
+                        var x = document.getElementById(i);
+                        if (i % 3 != 2) {
+                            if (x.value == x.defaultValue) {
+                
+                            } else {
+                                if (i % 3 == 0) {
+                
+                                    contract.methods.ModificarPorcentajeNotaGeneral(ArrayResult[y], parseInt(x.value), fecha, idprofe).send({ from: accounts[0] },
+                                        async function (error, transactionHash) {
+                                            run++;
+                                            if (run >= stop) {
+                                                const form = document.createElement('form');
+                                                form.method = "get";
+                                                form.action = "/dc1/" + iduser + "/" + idmateria;
+                                                document.body.appendChild(form);
+                                                form.submit();
+                                            }
+                                        });
+                                } else {
+                                    contract.methods.ModificarNombreNotaGeneral(ArrayResult[y], x.value, fecha, idprofe).send({ from: accounts[0] },
+                                        async function (error, transactionHash) {
+                                            run++;
+                                            if (run >= stop) {
+                                                const form = document.createElement('form');
+                                                form.method = "get";
+                                                form.action = "/dc1/" + iduser + "/" + idmateria;
+                                                document.body.appendChild(form);
+                                                form.submit();
+                                            }
+                                        });
+                
+                                }
+                            }
+                
+                        } else {
+                            if (x.checked == x.defaultChecked) {
+                            } else {
+                
+                                contract.methods.ModificarEstadoNotaGeneral(ArrayResult[y], fecha, idprofe).send({ from: accounts[0] },
+                                    async function (error, transactionHash) {
+                                        run++;
+                                        if (run >= stop) {
+                                            const form = document.createElement('form');
+                                            form.method = "get";
+                                            form.action = "/dc1/" + iduser + "/" + idmateria;
+                                            document.body.appendChild(form);
+                                            form.submit();
+                                        }
+                                    });
+                            }
+                        }
+                    }
+                } else {
+                    alert("Porcentaje de notas activadas excede el 100%, porfavor reduzca los porcentajes de las notas o inhabilite alguna nota");
+                }
+
+
+
+
+            };
+            web3.eth.personal.getAccounts().then(async function (accounts) {
+
+                contract.methods.GetNotasTotalesMateria(idmateria).call()
+                    .then(
+                        async function (ArrayResult) {
+                            CambiarNotas(ArrayResult, accounts);
+                        }
+                    )
+            })
+            return false;
+
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,413 @@
+<html>
+
+<head>
+
+  <meta charset="utf-8">
+  <% include partials/head %>
+  <% include partials/SmartContract %>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <title>Historial de materia</title>
+
+  <!-- Bootstrap -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-sm-8 col-sm-push-2">
+        <h1 class="text-center">Información de la materia</h1>
+        <hr />
+        <br />
+      </div>
+    </div>
+
+    <div class="container">
+      <div id="izquierda">
+
+        <div class="col-sm-5">
+          <table>
+            <tr>
+              <td style="width:22px;">Codigo</td>
+              <td><%= materia.materia.codigo%></td>
+            </tr>
+            <tr>
+              <td style="width:22px;">nombre</td>
+              <td><%= materia.materia.nombre%></td>
+            </tr>
+            <tr>
+              <td style="width:22px;">Profesor</td>
+              <td> <%= materia.materia.profesor%> </td>
+            </tr>
+            <tr>
+              <td style="width:22px;">estudiante</td>
+              <td> <%= user.student.nombre%> </td>
+            </tr>
+          </table>
+
+        </div>
+      </div>
+    </div>
+    <div class="container col-xs-12 col-sm-8 col-sm-push-2" style="margin-top: 130px">
+      <h1 class="text-center">Historial de materia</h1>
+    </div>
+  </div>
+  <div id="MateriasRow">
+    <table id="customers">
+      <thead>
+        <tr>
+          <th>Nota</th>
+          <th>Responsable</th>
+          <th>Modificación</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Cambio</th>
+
+        </tr>
+      </thead>
+      <tbody id="tablebody">
+
+      </tbody>
+    </table>
+    <div>
+
+      <div class="card" style="border:none">
+        <button onclick="window.location.href='/aec/<%=user._id%>'" style="width: 200px;">Regresar</button>
+      </div>
+
+    </div>
+  </div>
+
+
+
+
+  <script>
+    var estudianteId = '<%= user._id%>';
+    var materiaId = '<%= materia._id%>';
+    var profe = '<%= materia.materia.profesor%>';
+
+    var profesores = '<%=profesores%>';
+    var NombreProfes = [];
+    var IdsProfes = [];
+
+    '<% for (let i = 0; i < profesores.length; i++) { %>'
+    NombreProfes.push('<%=profesores[i][0]%>');
+    IdsProfes.push('<%=profesores[i][1]%>');
+    '<% }%>'
+
+    var IdsNotasparticulares = [];
+    var IdsNotasgenerales = [];
+    var HNotasgenerales = [];
+    var HNotasgeneralesOrganizado = [];
+    var HNotasparticulares = [];
+    var global1 = 0;
+
+    contract.methods.ConsultarHistorialNotas(estudianteId, materiaId, 0).call()
+      .then(
+        async function (result) {
+          IdsNotasparticulares = result[0];
+          IdsNotasgenerales = result[1];
+          for (let i = 0; i < IdsNotasgenerales.length; i++) {
+            contract.methods.consultarNotageneralH(IdsNotasgenerales[i]).call()
+              .then(
+                async function (result1) {
+                  global1++;
+                  if (global1 >= IdsNotasgenerales.length) {
+                    HistorialNotasParticulares(HNotasgenerales);
+                  }
+                  HNotasgenerales.push(result1);
+                })
+
+          }
+
+        })
+    function HistorialNotasParticulares(HNotasgenerales) {
+      global1 = 0;
+      for (let j = 0; j < IdsNotasparticulares.length; j++) {
+        contract.methods.consultarNotaParticularH(IdsNotasparticulares[j]).call()
+          .then(async function (result2) {
+            global1++
+            HNotasparticulares.push(result2);
+            if (global1 >= IdsNotasparticulares.length) {
+              CrearHistorial(HNotasparticulares, HNotasgenerales);
+
+            }
+
+
+          })
+
+
+      }
+
+    }
+
+    const distinto = (valor, indice, self) => {
+      return self.indexOf(valor) === indice;
+    }
+    function CrearHistorial(HNotasparticulares, HNotasgenerales) {
+      //sacamos cuantas notas generales hay, y se guarda en Notas
+      var Notas = [];
+      for (let j = 0; j < HNotasgenerales.length; j++) {
+        Notas[j] = HNotasgenerales[j][5];
+      }
+      Notas = Notas.filter(distinto);
+      var Notas2 = [];
+      var Notasp2 = [];
+      for (let i = 0; i < Notas.length; i++) { Notas2[i] = 0; }
+      for (let i = 0; i < Notas.length; i++) { Notasp2[i] = 0; }
+      // Creamos otro alrreglo donde ponemos cuantos datos repetidos hay, y los guardamos en Notas2
+      for (let i = 0; i < HNotasgenerales.length; i++) {
+        for (let j = 0; j < Notas.length; j++) {
+          if (Notas[j] == HNotasgenerales[i][5]) {
+            Notas2[j]++;
+          }
+
+        }
+      }
+
+      //Hacemos lo mismo para las notas particulares, guardados en Notasp2
+
+      for (let i = 0; i < HNotasparticulares.length; i++) {
+        for (let j = 0; j < Notas.length; j++) {
+          if (Notas[j] == HNotasparticulares[i][1]) {
+            Notasp2[j]++;
+          }
+
+        }
+      }
+
+      var notas3 = [];
+      var notas4 = []
+      for (let j = 0; j < Notas.length; j++) { notas3[j] = parseInt(Notas[j]); }
+      //Organizamos el arreglo de HNotasgenerales, para eso primero se debemos organizar los valores unicos y los guardamos en notas4
+      for (let j = 0; j < Notas.length; j++) {
+        const element = Math.min.apply(null, notas3);
+        var index = notas3.indexOf(element);
+        notas4.push(element);
+        notas3.splice(index, 1);
+      }
+      //teniendo los valores unicos organizados, pasamos a organizar el arreglo HNotasgenerales
+      var HNotasgenerales2 = [];
+      for (let i = 0; i < notas4.length; i++) {
+        for (let j = 0; j < HNotasgenerales.length; j++) {
+          if (notas4[i] == parseInt(HNotasgenerales[j][5])) {
+            HNotasgenerales2.push(HNotasgenerales[j]);
+          }
+
+        }
+      }
+      HNotasgenerales = HNotasgenerales2;
+
+      //y tambien el arrego de Hnotasparticulares
+
+      var HNotasparticulares2 = [];
+      for (let i = 0; i < notas4.length; i++) {
+        for (let j = 0; j < HNotasparticulares.length; j++) {
+          if (notas4[i] == parseInt(HNotasparticulares[j][1])) {
+            HNotasparticulares2.push(HNotasparticulares[j]);
+          }
+
+        }
+      }
+      HNotasparticulares = HNotasparticulares2;
+
+      k = 0;
+      kk = 0;
+      var texto;
+      var tablebody = document.getElementById('tablebody');
+      for (let j = 0; j < Notas.length; j++) {
+        var tr1 = document.createElement('tr');
+        var td1 = document.createElement('td');
+        td1.setAttribute("style", "text-align:center");
+        var tamaño = Notas2[j] + Notasp2[j];
+        td1.setAttribute("rowspan", tamaño);
+        texto = j+1;
+        var valor = document.createTextNode(texto);
+        td1.appendChild(valor);
+        tr1.appendChild(td1);
+        texto = HNotasgenerales[k][2];
+
+
+        var td1 = document.createElement('td');
+        td1.setAttribute("style", "text-align:center");
+        for (let yy = 0; yy < IdsProfes.length; yy++) {
+          if (HNotasgenerales[k][6] == IdsProfes[yy]) {
+            profe = NombreProfes[yy]
+          }
+        }
+        var valor = document.createTextNode(profe);
+        td1.appendChild(valor);
+        tr1.appendChild(td1);
+
+        var td1 = document.createElement('td');
+        td1.setAttribute("style", "text-align:center");
+        var valor = document.createTextNode("General");
+        td1.appendChild(valor);
+        tr1.appendChild(td1);
+
+        var td1 = document.createElement('td');
+        td1.setAttribute("style", "text-align:center");
+        texto = HNotasgenerales[k][4];
+        texto = texto.split(" ");
+        var valor = document.createTextNode(texto[0]);
+        td1.appendChild(valor);
+        tr1.appendChild(td1);
+
+        var td1 = document.createElement('td');
+        td1.setAttribute("style", "text-align:center");
+        var valor = document.createTextNode(texto[2]);
+        td1.appendChild(valor);
+        tr1.appendChild(td1);
+
+        var td1 = document.createElement('td');
+        td1.setAttribute("style", "text-align:center");
+        var texto = "Se crea la nota con nombre " + HNotasgenerales[k][1] + " con valor del " + HNotasgenerales[k][0] + "%";
+        var valor = document.createTextNode(texto);
+        td1.appendChild(valor);
+        tr1.appendChild(td1);
+
+        k++;
+
+        tablebody.appendChild(tr1);
+        //**********************************************************************************
+        // realizamos la segunda fila  a la n sima de cada nota general
+        for (let i = 0; i < Notas2[j] - 1; i++) {
+          var tr1 = document.createElement('tr');
+          var cambio = "";
+          var HNG = HNotasgenerales.slice(k - 1, k + 1);
+          if (HNG[0][0] == HNG[1][0]) {
+            if (HNG[0][1] == HNG[1][1]) {
+              if (HNG[0][3] == HNG[1][3]) {
+
+              } else {
+                if (HNG[0][3] == false) {
+                  cambio = "se habilita";
+                } else {
+                  cambio = "se inhabilita";
+                }
+              }
+
+            } else {
+              cambio = "Cambio el Nombre de la nota de " + HNG[0][1] + " a " + HNG[1][1];
+            }
+          } else {
+            cambio = "Cambio el porcentaje de la nota de " + HNG[0][0] + "% a " + HNG[1][0] + "%";
+          }
+
+
+          var td1 = document.createElement('td');
+          td1.setAttribute("style", "text-align:center");
+          texto = HNotasgenerales[k][2];
+          for (let yy = 0; yy < IdsProfes.length; yy++) {
+            if (HNotasgenerales[k][6] == IdsProfes[yy]) {
+              profe = NombreProfes[yy]
+            }
+          }
+          var valor = document.createTextNode(profe);
+          td1.appendChild(valor);
+          tr1.appendChild(td1);
+
+          var td1 = document.createElement('td');
+          td1.setAttribute("style", "text-align:center");
+          var valor = document.createTextNode("General");
+          td1.appendChild(valor);
+          tr1.appendChild(td1);
+
+          var td1 = document.createElement('td');
+          td1.setAttribute("style", "text-align:center");
+          texto = HNotasgenerales[k][4];
+          texto = texto.split(" ");
+          var valor = document.createTextNode(texto[0]);
+          td1.appendChild(valor);
+          tr1.appendChild(td1);
+
+          var td1 = document.createElement('td');
+          td1.setAttribute("style", "text-align:center");
+          var valor = document.createTextNode(texto[2]);
+          td1.appendChild(valor);
+          tr1.appendChild(td1);
+
+          var td1 = document.createElement('td');
+          td1.setAttribute("style", "text-align:center");
+          var valor = document.createTextNode(cambio);
+          td1.appendChild(valor);
+          tr1.appendChild(td1);
+          k++;
+          tablebody.appendChild(tr1);
+
+        }
+
+
+        for (let i = 0; i < Notasp2[j]; i++) {
+
+          var tr1 = document.createElement('tr');
+          var td1 = document.createElement('td');
+          td1.setAttribute("style", "text-align:center");
+          profe = ""
+          for (let ww = 0; ww < IdsProfes.length; ww++) {
+            if (IdsProfes[ww] == HNotasparticulares[kk][4]) {
+              profe = NombreProfes[ww];
+            }
+          }
+
+          var valor = document.createTextNode(profe);
+          td1.appendChild(valor);
+          tr1.appendChild(td1);
+
+          var td1 = document.createElement('td');
+          td1.setAttribute("style", "text-align:center");
+          var valor = document.createTextNode("Particular");
+          td1.appendChild(valor);
+          tr1.appendChild(td1);
+
+          var td1 = document.createElement('td');
+          td1.setAttribute("style", "text-align:center");
+          texto = HNotasparticulares[kk][3];
+          texto = texto.split(" ");
+          var valor = document.createTextNode(texto[0]);
+          td1.appendChild(valor);
+          tr1.appendChild(td1);
+
+          var td1 = document.createElement('td');
+          td1.setAttribute("style", "text-align:center");
+          var valor = document.createTextNode(texto[2]);
+          td1.appendChild(valor);
+          tr1.appendChild(td1);
+
+          var td1 = document.createElement('td');
+          td1.setAttribute("style", "text-align:center");
+
+          if (HNotasparticulares[kk][0] != 123) {
+            text = "El valor de la nota cambia a " + HNotasparticulares[kk][0];
+            kk++;
+
+            //  var HNP = HNotasparticulares.slice(kk - 1, kk + 1);
+            //  if (HNP[0][1] == HNP[1][1]) {
+            //    text = "se modifica el valor de la nota de "+HNP[0][0]+" a "+HNP[1][0];
+            //  }
+          } else {
+            text = "Se borro la nota";
+            kk++;
+
+          }
+
+          var valor = document.createTextNode(text);
+          td1.appendChild(valor);
+          tr1.appendChild(td1);
+
+          tablebody.appendChild(tr1);
+        }
+
+      }
+    }
+
+
+
+  </script>
+
+</body>
+
+</html>

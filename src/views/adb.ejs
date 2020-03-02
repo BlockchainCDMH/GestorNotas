@@ -1,0 +1,51 @@
+
+<head>
+<%include partials/head%>
+</head>
+
+<body class="w3-content" style="max-width:950px">
+
+<!-- Sidebar/menu -->
+
+    <div class="w3-sidebar w3-bar-block w3-white w3-top" style="text-align: justify;text-justify: inter-word; z-index:3; width:100%; padding-top: 80px" >
+        <br><br>
+        <h2>Dar de baja a un docente</h2>
+    <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ducimus expedita non voluptas ipsa hic beatae, corrupti sapiente nobis delectus velit perferendis labore quos deserunt corporis quae explicabo pariatur veniam iusto molestias. Amet dignissimos ipsam deleniti blanditiis magni perspiciatis eveniet voluptatem.</p>
+    <div class="col-sm-5">
+                <input id="myInput"  type="text" placeholder="Filtrar">
+    </div>
+    <table>
+            <thead>
+                <tr>
+                    <td>Nombre</td>
+                    <td>Correo</td>
+                    <td>Telefono</td>
+                    <td>Dirección</td>
+                </tr>
+            </thead>
+            <tbody id="myTable">
+                    <% docentes.forEach(function (Users) {%>
+                        <tr>
+                           <td><a href="adb/<%= Users._id%>"><%= Users.teacher.nombre%></a> </td>
+                            <td> <%= Users.teacher.phone%> </td>
+                            <td> <%= Users.teacher.email%> </td>
+                            <td> <%= Users.teacher.dir%> </td>                  
+                        </tr>
+                    <% }) %>
+                    
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+    $(document).ready(function(){
+      $("#myInput").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#myTable tr").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
+    });
+    </script> 
+</body>
+

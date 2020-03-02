@@ -1,0 +1,52 @@
+
+<html lang="en">
+<head>
+        <% include partials/head %>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container" >
+            <input id="myInput"  type="text" placeholder="Filtre aquí el docente a buscar">
+            <br><br>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Telefono</th>
+                <th>Dirección</th>
+            </tr>
+        </thead>
+        <tbody id="customers" >
+                <% docentes.forEach(function (Users) { %>
+                    
+
+                    <tr>   
+                        <td><a href="/adc/<%= Users._id%>"> <%= Users.teacher.nombre%></a></td>
+                        <td> <%= Users.teacher.phone%> </td>
+                        <td> <%= Users.teacher.email%> </td>
+                        <td> <%= Users.teacher.dir%> </td>                  
+                    </tr>
+                <% }) %>
+                
+        </tbody>
+    </table>
+
+    <script>
+    $(document).ready(function(){
+      $("#myInput").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#customers tr").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
+    });
+    </script>
+
+</body>
+</html>

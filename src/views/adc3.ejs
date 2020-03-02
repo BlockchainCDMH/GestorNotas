@@ -1,0 +1,152 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Profile Page</title>
+    <% include partials/head %>
+    <% include partials/SmartContract %>
+</head>
+
+<body>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="container">
+        <header class="text-center">
+            <h1>Información del curso</h1>
+        </header>
+        <hr>
+        <div class="row">
+            <div class="card" style="border: none">
+                <div class="container">
+                    <table class="table table-sm">
+                        <tbody id="myTable">
+
+                            <% materias.forEach(function (materia) {%>
+                            <tr style="border: none;">
+                                <th style="  border: none;background-color:white;">ID</th>
+                                <td style="border: none;background-color:white;"><%= materia.materia.codigo%></td>
+                            </tr>
+                            <tr>
+                                <th style="  border: none;background-color:white;">Nombre</th>
+                                <td style="border: none;background-color:white;"><%= materia.materia.nombre%> <br> </td>
+                            </tr>
+                            <tr>
+                                <th style="  border: none;background-color:white;">Número Estudiantes</th>
+                                <td style="border: none;background-color:white;" style="text-align:center">
+                                    <%= Estudiantes.length %> <br> </td>
+                            </tr>
+                            <tr>
+                                <th style=" border: none;background-color:white;">profesor</th>
+                                <td style="border: none;background-color:white;"><%= materia.materia.profesor %> <br>
+                                </td>
+                            </tr>
+
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div style="border: none;float: right;text-align: right;width: 400px;">
+
+                <a href="/adc/<%=usuario._id%>"
+                    style="background-color: #0095dd; color: white; padding: 14px 20px; margin: 8px 0; border: none; cursor: pointer; width: 50%;"
+                    class="btn btn-jg">Volver</a>
+            </div>
+
+        </div>
+    </div>
+    <div class="container">
+        <h2>Estudiantes</h2>
+        <table id="customers">
+            <thead>
+                <tr id="tbheader">
+                    <th style="text-align:center">Nombre</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <% Estudiantes.forEach(function (Estudiante) {%>
+                <tr class="tbbody">
+                    <td style="text-align:center"><%= Estudiante.student.nombre%></td>
+
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+
+        var columnas = '<%= Estudiantes.length;  %>';
+        var idmateria = '<%= materias[0]._id %>';
+        var idestudiantes = [];
+        '<% Estudiantes.forEach(function (estudiante) { %>'
+        idestudiantes.push('<%=estudiante._id%>');
+        '<%})%>'
+        var idNotasMaterias;
+        var entradas;
+
+        contract.methods.GetNotasGeneralesMateria(idmateria).call()
+            .then(
+                async function (result) {
+                    creartabla(result);
+                }
+            )
+
+        async function creartabla(result, columna) {
+
+            NF = result.length;
+            idNotasMaterias = result;
+            NC = columnas;
+            var tableheader = document.getElementById('tbheader');
+
+            for (let j = 0; j < NF; j++) {
+                contract.methods.GetNotaGeneral(result[j]).call()
+                    .then(
+                        async function (RTA) {
+                            k = RTA[1] + " (" + RTA[0] + "%)";
+                            var td1 = document.createElement('th');
+                            td1.setAttribute("style", "text-align:center");
+
+                            var text1 = document.createTextNode(k);
+                            td1.appendChild(text1);
+                            tableheader.appendChild(td1);
+                        }
+                    )
+            }
+
+            for (let i = 0; i < NC; i++) {
+                for (let j = 0; j < NF; j++) {
+                    prueba = NF * NC;
+                    w = j + NF * i;
+                    contract.methods.consultarNotaParticular(result[j], idestudiantes[i], w, w).call()
+                        .then(
+                            async function (result) {
+                                var tablebody = document.getElementsByClassName('tbbody');
+                                var td2 = document.createElement('td');
+
+                                if (result[0] == 123) { } else {
+                                    td2.setAttribute("style", "text-align:center");
+                                    var valor = document.createTextNode(result[0]);
+                                    td2.appendChild(valor);
+                                }
+                                tablebody[i].appendChild(td2);
+
+
+                            }
+                        )
+
+                }
+
+            }
+
+
+        }
+
+
+    </script>
+</body>
+
+</html>

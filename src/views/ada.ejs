@@ -1,0 +1,53 @@
+
+
+<html>
+  <head>
+   <% include partials/head %>
+  </head>
+
+  <body>
+
+ <div class="container">
+    <div class="form-group">
+        <% include partials/messages %>
+    <form action="/ada" method="post" style="border : none">
+
+
+              <h1 class="text-center">Agregar Docente
+              </h1> </div>
+              <div class="form-group">             
+                  <label class="fa fa-user" for="nombre"><b> Nombre</b></label>
+                  <input class="form-control" type="text" name="nombre" required>
+                </div>
+                <div class="form-group">
+                  <label class="fa fa-phone" for="phone"><b> Telefono</b></label>
+                    <input class="form-control" type="tel" pattern="[0-9]{10}" name="phone" required> 
+                </div>
+                <div class="form-group">
+                   <label class="fa fa-envelope" for="email"><b> Correo</b></label>
+                    <input class="form-control" type="email" name="email" required>                  
+                </div>
+                <div class="form-group">
+                  <label class="fa fa-home" for="dir"><b> Dirección</b></label>
+                    <input class="form-control" type="text" name="dir" required>
+                </div>
+                <div class="form-group">
+                  <label class="fa fa-address-card" for="usuarioid"><b> Usuario</b></label>
+                  <input class="form-control" type="text" placeholder="Ingrese su Usuario" name="usuarioid" required>
+                </div>
+                <div class="form-group">
+                  <label class="fa fa-lock" for="password"><b> Contraseña</b></label>
+                  <input class="form-control" type="password" placeholder="Ingrese su contraseña" name="password" required>
+                </div>
+
+
+                <input type="submit" style="background-color: #0095dd; color: white; padding: 14px 20px;
+                  margin: 8px 0; border: none;
+                  cursor: pointer; width: 50%;"
+                  value="Agregar"class="btn btn-jg">
+              </div>
+              
+
+    </form>
+  </body>
+</html>

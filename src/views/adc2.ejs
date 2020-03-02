@@ -1,0 +1,70 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Profile Page</title>
+  <% include partials/head %>
+</head>
+
+<body>
+  <div class="container">
+    <header class="text-center">
+      <h1>Información Personal</h1>
+    </header>
+    <hr>
+    <div class="container" style="display: flex;justify-content: center;align-items: center;">
+      <div class="col-sm-6">
+        <div class="card">
+          <div class="card-body ">
+            <h3 class="card-title"><span class="fa fa-user"></span> Datos personales</h3>
+            <p>
+              <% user.forEach(function (Users) {%>
+              <strong>Nombre: </strong> <%= Users.teacher.nombre %> <br>
+              <strong>email: </strong> <%= Users.teacher.email %> <br>
+              <strong>Telefono: </strong> <%= Users.teacher.phone %> <br>
+              <strong>dirección: </strong> <%= Users.teacher.dir %> <br>
+              <strong>usuario: </strong> <%= Users.teacher.usuarioid %> <br>
+              <% }) %>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div class="container text-center ">
+      <h2>Materias</h2>
+      <div class="card" style="border:none">
+        <table id="customers">
+          <thead>
+            <tr>
+              <th style="text-align:center">codigo</th>
+              <th style="text-align:center">materia</th>
+            </tr>
+          </thead>
+          <tbody id="myTable">
+
+            <% cursos.forEach(function (curso) { %>
+            <tr>
+              <td width="20%" style="text-align:center"><%= curso.materia.codigo%> </td>
+              <td width="80%" style="text-align:center"> <a href="../adc2/<%= user[0]._id %>/<%=curso._id%>"><%= curso.materia.nombre%></a>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-md-3 card card-body card-title" style="border: none">
+      <br>
+      <div class="card" style="border: none">
+        <div class="col-sm-6">
+          <button onclick="window.location.href='/adc'" style="width: 200px;">Regresar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

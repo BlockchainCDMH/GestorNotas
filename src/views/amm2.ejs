@@ -1,0 +1,203 @@
+<html lang="en">
+
+<head>
+    <% include partials/head %>
+    <% include partials/SmartContract %>
+
+    <title>Document</title>
+</head>
+
+<body>
+    <br><br><br><br>
+    <h1>Información del curso</h1>
+    <div class="container">
+        <div id="izquierda">
+
+            <div class="col-sm-5">
+                <table>
+                    <tr>
+                        <td style="width:22px;">Codigo</td>
+                        <td><%= materias.materia.codigo%></td>
+                    </tr>
+                    <tr>
+                        <td style="width:22px;">nombre</td>
+                        <td><%= materias.materia.nombre%></td>
+                    </tr>
+                    <tr>
+                        <td style="width:22px;">Profesor</td>
+                        <td>
+                            <div class="form-group">
+                                <input list="profes" id="CambiarProfesor" value="<%= materias.materia.profesor %>">
+                                <datalist id="profes">
+                                    <% profesores.forEach(function (Users) { %>
+                                    <option value="<%= Users.teacher.nombre %>">
+                                        <% }) %>
+                                </datalist>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Estudiantes</td>
+                        <td style="text-align:center"><%= estudiantes.length %></td>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+
+        <div id="derecha"><br>
+            <button>Cancelar materia</button>
+            <br>
+            <button>Dar de baja</button>
+        </div>
+    </div>
+    <div class="container" id="Abajo">
+        <h1 align="center">lista de estudiantes</h1>
+
+        <table id="customers">
+            <thead id="thead">
+                <tr id="tbheader">
+                    <th rowspan="2" style="text-align:center">Nombre</td>
+                </tr>
+            </thead>
+            <tbody>
+                <% estudiantes.forEach(function (Users) { %>
+                <tr class="tbbody">
+                    <td widht="60px" style="text-align:center"><%= Users.student.nombre %></td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+
+
+
+    </div>
+    </div>
+    <div class="container" style=" height: 70px;">
+        <div style="float: right;">
+            <form action="/amm3/<%= materias._id %>">
+                <input type="submit" value="Agregar estudiante" />
+            </form>
+        </div>
+    </div>
+    <div class="container" style=" height: 70px;">
+        <div style="float: left; align-items: center;">
+            <form action="/amm" method="GET">
+                <input type="submit" value="Cancelar" />
+            </form>
+        </div>
+        <div style="float: right;">
+            <form action="#">
+                <input type="submit" onclick="revision()" value="Guardar cambios" />
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var arrayprofesores = [];
+        '<% profesores.forEach(function (Users) { %>'
+        arrayprofesores.push("<%= Users.teacher.nombre %>");
+        '<% }) %>'
+        var idmateria = '<%=materias._id%>';
+        var columnas = '<%= estudiantes.length;  %>';
+
+
+        var idestudiantes = [];
+        '<% for (i=0;i<estudiantes.length;i++){%>'
+        idestudiantes.push('<%= estudiantes[i]._id%>');
+        '<%}%>'
+
+        var idNotasMaterias;
+        var entradas;
+
+
+
+        contract.methods.GetNotasGeneralesMateria(idmateria).call()
+            .then(
+                async function (result) {
+                    creartabla(result);
+                }
+            )
+
+        async function creartabla(result, columna) {
+
+            NF = result.length;
+            idNotasMaterias = result;
+            NC = columnas;
+            var tableheader = document.getElementById('tbheader');
+
+            for (let j = 0; j < NF; j++) {
+                contract.methods.GetNotaGeneral(result[j]).call()
+                    .then(
+                        async function (RTA) {
+                            k = RTA[1] + " (" + RTA[0] + "%)";
+                            var td1 = document.createElement('th');
+                            td1.setAttribute("style","text-align:center");
+                            var text1 = document.createTextNode(k);
+                            td1.appendChild(text1);
+                            tableheader.appendChild(td1);
+                        }
+                    )
+            }
+
+            for (let i = 0; i < NC; i++) {
+                for (let j = 0; j < NF; j++) {
+                    prueba = NF * NC;
+                    w = j + NF * i;
+                    contract.methods.consultarNotaParticular(result[j], idestudiantes[i], w, w).call()
+                        .then(
+                            async function (result) {
+
+                                var tablebody = document.getElementsByClassName('tbbody');
+                                var td2 = document.createElement('td');
+                                
+                                if (result[0] == 123) { } else {
+                                    td2.setAttribute("style","text-align:center");
+                                    var valor = document.createTextNode(result[0]);
+                                    td2.appendChild(valor);
+                                }
+                                tablebody[i].appendChild(td2);
+
+
+                            }
+                        )
+
+                }
+
+            }
+
+
+        }
+
+
+
+        function revision() {
+            var profesor = document.getElementById("CambiarProfesor");
+            if (profesor.value == profesor.defaultValue) {
+                // tocaría revisar a los estudiantes
+            } else {
+                var a = false;
+                for (let i = 0; i < arrayprofesores.length; i++) {
+                    if (profesor.value == arrayprofesores[i]) {
+                        a = true;
+                    }
+
+                }
+                if (a == true) {
+                    var IdNewteacher
+                    const form = document.createElement('form');
+                    form.method = "get";
+                    form.action = "/amm2v2/<%=materias._id%>/" + profesor.value;
+                    document.body.appendChild(form);
+                    form.submit();
+                } else {
+                    alert("Por favor seleccione entre los profesores del sistema");
+                }
+            }
+
+
+        }
+    </script>
+</body>
+
+</html>

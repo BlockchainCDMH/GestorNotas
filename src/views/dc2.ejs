@@ -1,0 +1,165 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Profile Page</title>
+    <% include partials/head %>
+    <% include partials/SmartContract %>
+</head>
+
+<body>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="container">
+        <header class="text-center">
+            <div class="container text-center">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="card" style="border:none">
+
+                            <h2>Materia: <%= materia[0].materia.nombre%></h2>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="card" style="border:none">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="col-sm-10">
+                <div class="card">
+                    <form role="form">
+                        <div id="idmateria" data-test="<%=materia[0]._id%>"></div>
+                        <div class="card-body mx-auto">
+                            <h4>porcentaje</h4>
+                            <input type="number" id="porcentaje" value="10">
+                            <h4>nombre</h4>
+                            <input type="text" id="nombre" value="N1M1">
+                            <span class="input-group-btn">
+                                <button type="submit" class="btn btn-primary btn-block">
+                                    crear nueva nota
+                                </button>
+                            </span>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="card" style="border:none">
+                    <a href="/dc1/<%=user[0]._id%>/<%=materia[0]._id%>"
+                        style="background-color: #0095dd; color: white; padding: 14px 20px; margin: 8px 0; border: none; cursor: pointer; width: 50%;"
+                        class="btn btn-jg">Volver</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+    <script>
+        var usuario = '<%=user[0]._id%>';
+        var materia = '<%=materia[0]._id%>';
+        var acu = 0;
+        var arrayacu = [];
+        var global1 = 0;
+
+
+
+        $('form').on('submit', async function (event) {
+            event.preventDefault();
+            try {
+                contract.methods.GetNotasGeneralesMateria(materia).call()
+                    .then(
+                        async function (result) {
+
+                            ConsultarCadaNotaGeneral(result);
+
+                        }
+                    )
+            } catch (error) {
+                console.log("ha ocurrido un error", error);
+            }
+
+
+            async function ConsultarCadaNotaGeneral(result) {
+
+                if (result == 0) {
+                    CrearNuevaNotaGeneral();
+                } else {
+                    for (let j = 0; j < result.length; j++) {
+                        try {
+                            contract.methods.GetNotaGeneral(result[j]).call()
+                                .then(
+                                    async function (RTA) {
+
+                                        if (global1 >= result.length - 1) {
+                                            global1 = 0;
+                                            CrearNuevaNotaGeneral();
+                                        } else {
+                                            arrayacu.push(parseInt(RTA[0]));
+                                            acu = acu + parseInt(RTA[0]);
+                                            global1++;
+                                        }
+
+                                    }
+                                )
+                        } catch (error) {
+                            console.log("ha ocurrido un error", error);
+                        }
+
+                    }
+                }
+            }
+
+
+            async function CrearNuevaNotaGeneral() {
+                porcentaje = $('#porcentaje').val();
+
+                acu = acu + parseInt(porcentaje);
+                if (acu > 100) {
+                    alert('Porcentaje maximo excedido, por favor reduzca el porcentaje o inhabilite alguna nota');
+
+                } else {
+                    try {
+                        web3.eth.personal.getAccounts().then(async function (accounts) {
+
+
+                            nombre = $('#nombre').val();
+
+                            porcentaje = parseInt(porcentaje);
+                            nombre = String(nombre);
+                            materia = String(materia);
+                            var fechaHora = new Date();
+                            var fecha = fechaHora.getDate() + "/" + fechaHora.getMonth() + "/" + fechaHora.getFullYear() + "  " + fechaHora.getHours() + ":" + fechaHora.getMinutes();
+                            contract.methods.CrearNotaGeneral(porcentaje, materia, nombre, fecha, usuario).send({ from: accounts[0] },
+                                async function (error, transactionHash) {
+                                    var acu = 0;
+                                    var arrayacu = [];
+                                    var global1 = 0;
+                                    alert("se ha creado una nueva nota");
+
+                                });
+
+                        })
+                    } catch (error) {
+                        console.log("ha ocurrido un error", error);
+                    }
+
+                }
+
+            }
+
+        });
+
+    </script>
+</body>
+
+</html>

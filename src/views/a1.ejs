@@ -1,0 +1,42 @@
+
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Profile Page</title>
+    <% include partials/head %>
+  </head>
+
+  <body>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="container">
+      <header class="text-center">
+        <h1>perfil</h1>
+        <a href="/logout" class="btn btn-light btn-sm">
+          Logout
+        </a>
+      </header>
+      <hr>
+      <div class="container">
+        <div class="col-sm-10">
+          <div class="card">
+            <div class="card-body mx-auto">
+              <h3 class="card-title"><span class="fa fa-user"></span> Datos personales</h3>
+              <p>
+                <strong>Nombre: </strong> <%= user.admin.nombre%> <br>
+                <strong>Telefono: </strong> <%= user.admin.phone%> <br>
+                <strong>correo: </strong> <%= user.admin.email%> <br>
+                <strong>Dirección: </strong> <%= user.admin.dir%> <br>
+                <strong>usuario</strong> : <%= user.admin.usuarioid%> <br>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+</html>

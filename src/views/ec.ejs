@@ -1,0 +1,319 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Profile Page</title>
+    <% include partials/head %>
+    <% include partials/SmartContract %>
+</head>
+
+<body>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="container">
+        <header class="text-center">
+            <div class="container text-center">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="card" style="border:none">
+                            <h2><%=user.student.nombre%></h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+
+        <hr>
+        <div style="width: 800px;overflow:auto;overflow: scroll;overflow-y:hidden;overflow-x: scroll;">
+            <table id="customers">
+                <thead id="thead">
+                    <tr id="thead1">
+                        <th style="text-align:center" rowspan="2">Asignatura</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <%arrayMaterias.forEach(function (materia) {%>
+                    <tr class="tbody">
+                        <td style="text-align:center"> <a href="ec2/<%=materia._id%>"> <%=materia.materia.nombre%></a>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-sm-8">
+
+                </div>
+            </div>
+
+        </div>
+
+</body>
+
+<script>
+    var idstudent = "<%= user._id%>";
+    var idmaterias = [];
+    '<%for (let j = 0; j < arrayMaterias.length; j++) {%>'
+    var element = '<%= arrayMaterias[j]._id%>';
+    idmaterias.push(element);
+    '<%}%>'
+    var notas = 0;
+    var mostrar = 0;
+    var valornotas = [];
+
+    for (let j = 0; j < idmaterias.length; j++) {
+        contract.methods.GetNotasGeneralesMateria(idmaterias[j]).call()
+            .then(
+                async function (result) {
+
+                    if (notas < result.length) {
+                        notas = result.length;
+                    }
+                    mostrar++;
+                    if (mostrar >= idmaterias.length) {
+                        finaliza();
+                    }
+                }
+            )
+    }
+    var p = 0;
+    var arreglonotas = [];
+    var arrayPorcentajes = [];
+    var arrayPorcentajes1 = [];
+    var resultarreglonotas = [];
+    var x = 0;
+    var a = 0;
+    var global1 = 0;
+    function finaliza() {
+
+        for (let i = 0; i < notas * (idmaterias.length); i++) {
+            arreglonotas[i] = 123;
+
+        }
+
+        for (let j = 0; j < idmaterias.length; j++) {
+            contract.methods.GetNotasGeneralesMateria(idmaterias[j]).call()
+                .then(
+                    async function (result) {
+                        resultarreglonotas[global1] = result;
+                        global1++;
+                        arregloNotas(result);
+                    }
+                )
+        }
+    }
+    function arregloNotas(result) {
+        if (result.length != 0) {
+
+
+            for (let i = 0; i < result.length; i++) {
+                p = i + notas * x;
+                contract.methods.consultarNotaParticular(result[i], idstudent, p, i).call()
+                    .then(
+                        async function (resultado) {
+                            if (resultado[2] >= result.length - 1) {
+                                a++;
+                            }
+                            arreglonotas[resultado[1]] = resultado[0];
+                            if (a >= idmaterias.length) {
+                                crearnotas(arreglonotas, notas, idmaterias.length);
+                            }
+                        }
+                    )
+            }
+        } else { a++; }
+
+        x++;
+    }
+    async function crearnotas(arraynotas, columnas, filas) {
+        k = 0;
+        ii = [];
+        for (let j = 0; j < idmaterias.length; j++) {
+            for (let i = 0; i < notas; i++) {
+
+                if (typeof (resultarreglonotas[j][i]) == "undefined") {
+
+                } else {
+                    ii[k] = resultarreglonotas[j][i];
+                    k++;
+
+                }
+
+            }
+        }
+        kk = 0;
+        for (let i = 0; i < k; i++) {
+            contract.methods.GetNotaGeneral(ii[i]).call()
+                .then(
+                    async function (RTA) {
+                        arrayPorcentajes1.push(RTA[0]);
+                        kk++
+                        if (kk >= k) {
+                            crearnotas2(arraynotas, columnas, filas, arrayPorcentajes1);
+                        }
+
+                    })
+
+        }
+
+    }
+
+    var acu = [];
+    var def = [];
+    var poracu = [];
+
+
+    function crearnotas2(arraynotas, columnas, filas, arrayPorcentajes1) {
+        k = 0;
+
+        for (let i = 0; i < idmaterias.length; i++) { poracu[i] = 0; acu[i] = 0; def[i] = 0; }
+
+        arrayPorcentajes = resultarreglonotas;
+
+        for (let i = 0; i < idmaterias.length; i++) {
+            for (let j = 0; j < notas; j++) {
+
+                if (typeof (resultarreglonotas[i][j]) == "undefined") {
+                    arrayPorcentajes[i][j] = 123;
+                }
+
+                else {
+                    prueba = j + i * notas;
+                    if (arraynotas[prueba] != 123) {
+                        arrayPorcentajes[i][j] = arrayPorcentajes1[k];
+                        acu[i] = acu[i] + arrayPorcentajes[i][j] * arraynotas[j + i * notas];
+                        def[i] = Math.round((def[i] + (arrayPorcentajes[i][j] * arraynotas[j + i * notas]) / 100) * 100) / 100;
+                        poracu[i] = poracu[i] + parseInt(arrayPorcentajes[i][j]);
+
+
+                    } else {
+                        arrayPorcentajes[i][j] = arrayPorcentajes1[k];
+
+                    }
+                    k++;
+                }
+            }
+
+
+        }
+        for (let i = 0; i < poracu.length; i++) {
+            if (poracu[i] != 0) {
+                acu[i] = Math.round((acu[i] / poracu[i]) * 100) / 100;
+            }
+
+        }
+
+        var firsttr = document.getElementById('thead1');
+        for (let j = 0; j < columnas; j++) {
+            var td2 = document.createElement('th');
+            td2.setAttribute("style", "text-align:center");
+            td2.setAttribute("Colspan", "2");
+            k = j + 1;
+            var text = "nota " + k;
+            var valor = document.createTextNode(text);
+            td2.appendChild(valor);
+            firsttr.appendChild(td2);
+        }
+        var td2 = document.createElement('th');
+        td2.setAttribute("style", "text-align:center");
+        td2.setAttribute("rowspan", "2");
+        var valor = document.createTextNode("Acu");
+        td2.appendChild(valor);
+        firsttr.appendChild(td2);
+
+        var td2 = document.createElement('th');
+        td2.setAttribute("style", "text-align:center");
+        td2.setAttribute("rowspan", "2");
+        var valor = document.createTextNode("Def");
+        td2.appendChild(valor);
+        firsttr.appendChild(td2);
+
+        var tableHead = document.getElementById('thead');
+        var tr1 = document.createElement('tr');
+        for (let j = 0; j < columnas; j++) {
+            var td2 = document.createElement('th');
+            td2.setAttribute("style", "text-align:center");
+            var valor = document.createTextNode("(%)");
+            td2.appendChild(valor);
+            tr1.appendChild(td2);
+
+            var td2 = document.createElement('th');
+            td2.setAttribute("style", "text-align:center");
+            var valor = document.createTextNode("Val");
+            td2.appendChild(valor);
+            tr1.appendChild(td2);
+        }
+        tableHead.appendChild(tr1);
+
+        var tablebody = document.getElementsByClassName('tbody');
+        for (let j = 0; j < filas; j++) {
+            for (let i = 0; i < columnas; i++) {
+                var td2 = document.createElement('td');
+                td2.setAttribute("style", "text-align:center; color:blue");
+                k = i + j * columnas
+                if (arrayPorcentajes[j][i] != 123) {
+                    var valor = document.createTextNode(arrayPorcentajes[j][i]);
+                } else { var valor = document.createTextNode(""); }
+                td2.appendChild(valor);
+                tablebody[j].appendChild(td2);
+
+                var td2 = document.createElement('td');
+                td2.setAttribute("style", "text-align:center");
+                if (arraynotas[k] != 123) {
+                    var valor = document.createTextNode(arraynotas[k]);
+                } else { var valor = document.createTextNode(""); }
+
+                td2.appendChild(valor);
+                tablebody[j].appendChild(td2);
+            }
+            var td2 = document.createElement('td');
+            if (acu[j] <= 30) {
+                if (acu[j] == 0) {
+                    td2.setAttribute("style", "text-align:center");
+                } else {
+                    td2.setAttribute("style", "text-align:center; color:red");
+                    var valor = document.createTextNode(acu[j]);
+                    td2.appendChild(valor);
+                }
+            } else {
+                td2.setAttribute("style", "text-align:center; color:blue");
+                var valor = document.createTextNode(acu[j]);
+                td2.appendChild(valor);
+            }
+
+
+            tablebody[j].appendChild(td2);
+
+            var td2 = document.createElement('td');
+            if (def[j] <= 30) {
+                if (def[j] == 0) {
+                    td2.setAttribute("style", "text-align:center");
+                } else {
+                    td2.setAttribute("style", "text-align:center; color:red");
+                    var valor = document.createTextNode(def[j]);
+                    td2.appendChild(valor);
+                }
+
+            } else {
+                td2.setAttribute("style", "text-align:center; color:blue");
+                var valor = document.createTextNode(def[j]);
+                td2.appendChild(valor);
+            }
+
+            tablebody[j].appendChild(td2);
+        }
+
+
+    }
+
+
+
+</script>
+
+</html>

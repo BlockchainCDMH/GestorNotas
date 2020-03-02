@@ -1,0 +1,95 @@
+
+<html lang="en">
+
+<head>
+    <% include partials/head %>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <br><br><br><br>
+    <h1>Información del curso</h1>
+    <div class="container">
+        <div id="izquierda">
+
+            <div class="col-sm-5">
+                <table>
+                    <tr>
+                        <td style="width:22px;">Codigo</td>
+                        <td><%= materias.materia.codigo%></td>
+                    </tr>
+                    <tr>
+                        <td style="width:22px;">nombre</td>
+                        <td><%= materias.materia.nombre%></td>
+                    </tr>
+                    <tr>
+                        <td style="width:22px;">Profesor</td>
+                        <td><%= materias.materia.profesor %></td>
+                    </tr>
+                    <tr>
+                        <td>Estudiantes</td>
+                        <td><%= estudiantes.length %></td>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+    <div class="container" id="Abajo">
+        <h1 align="center">lista de estudiantes</h1>
+        <form action="/amm4/<%= materias._id%>" method="POST" name="Formularioamm4" id="Formularioamm4" >
+            <table id="customers">
+                <thead>
+                    <th></th>
+                    <th>Nombre</th>
+                    <th>Usuario</th>
+                    <th>telefono</th>
+                    <th>Correo</th>
+                </thead>
+                <% AllStudents.forEach(function (Users) { %>
+                <tr>
+                    <td style="text-align:center"><input type="checkbox" name="nombre" value="<%= Users._id %>" class="checks"></td>
+                    <td style="text-align:center"><%= Users.student.nombre %></td>
+                    <td style="text-align:center"><%= Users.student.usuarioid %></td>
+                    <td style="text-align:center"><%= Users.student.phone %></td>
+                    <td style="text-align:center"><%= Users.student.email %></td>
+                </tr>
+                <% }) %>
+            </table>
+    </div>
+    </div>
+    <div class="container" style=" height: 70px;">
+        <div style="float: right;">
+            <input type="submit" id="checkBtn" value="Agregar estudiantes" />
+            </form>
+        </div>
+    </div>
+    <div class="container" style=" height: 70px;">
+        <div style="float: left; align-items: center;">
+            <form action="/amm2/<%= materias._id%>" method="GET">
+                <input type="submit" value="Cancelar" />
+            </form>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#checkBtn').click(function() {
+              checked = $("input[type=checkbox]:checked").length;
+        
+              if(!checked) {
+                alert("debes seleccionar almenos un estudiante.");
+                return false;
+              }
+        
+            });
+        });
+        
+        </script>
+</body>
+
+</html>

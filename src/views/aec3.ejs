@@ -1,0 +1,81 @@
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Profile Page</title>
+    <% include partials/head %>
+
+</head>
+
+<body>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="container">
+        <header class="text-center">
+            <h1>perfil del estudiante</h1>
+        </header>
+        <hr>
+        <div class="container">
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body ">
+                        <h3 class="card-title"><span class="fa fa-user"></span> Datos personales</h3>
+                        <div class="container"></div>
+                        <p>
+                            <% user.forEach(function (Users) {%>
+                            <strong>Nombre: </strong> <%= Users.student.nombre %> <br>
+                            <strong>email: </strong> <%= Users.student.email %> <br>
+                            <strong>Telefono: </strong> <%= Users.student.phone %> <br>
+                            <strong>dirección: </strong> <%= Users.student.dir %> <br>
+                            <strong>usuario: </strong> <%= Users.student.usuarioid %> <br>
+                            <% }) %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a href="/aec" class="btn btn-light btn-sm">
+            Regresar
+        </a>
+    </div>
+
+
+    <div class="container text-center ">
+        <h2>Materias</h2>
+        <div class="row">
+            <div class="col-md-5">
+                <div class="card" style="border:none">
+                    <div class="card-body">
+                        <div class="card-title">
+                            <table style="width: 300px ;">
+                                <thead>
+                                    <tr>
+                                        <td>ID</td>
+                                        <td>nombre</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% materias.forEach(function (materia) { %>
+                                    <tr>
+                                        <td width="10px"><%= materia.materia.codigo%> </td>
+                                        <td width="90px" style="text-align: center"><a
+                                                href="/aec3/<%=user[0]._id%>/<%=materia._id%>"><input type="button"
+                                                    style="background-color: #f1f1f1; color: #0095dd; padding: 5px 0px; margin: 8px 0; border: none; cursor: pointer; width: 120px"
+                                                    class="btn btn-jg" name="materia"
+                                                    value="<%=materia.materia.nombre%>"></a></td>
+                                    </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+
+</html>

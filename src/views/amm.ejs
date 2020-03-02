@@ -1,0 +1,54 @@
+
+<html lang="en">
+
+<head>
+    <% include partials/head %>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <br><br><br><br>
+    <div class="container">
+        <input id="myInput" type="text" placeholder="Filtrar">
+        <br><br>
+    </div>
+    <div class="col-sm-10 mx-auto">
+        <table id="customers">
+            <thead>
+                <tr>
+                    <th>Codigo</th>
+                    <th>nombre</th>
+                    <th>Profesor</th>
+                </tr>
+            </thead>
+            <tbody id="myTable">
+                <% materias.forEach(function (Users) {%>
+
+                <tr>
+                    <td width="50px" style="text-align:center"> <%= Users.materia.codigo %> </td>
+                    <td> <a href="/amm2/<%= Users._id %>"><%= Users.materia.nombre %></a> </td>
+                    <td> <%= Users.materia.profesor %> </td>
+                </tr>
+                <% }) %>
+
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $("#myInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#myTable tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>

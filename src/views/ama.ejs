@@ -1,0 +1,82 @@
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ama</title>
+    <% include partials/head %>
+</head>
+
+<body>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="contaiter">
+        <div class="form-group">
+
+            <form action="/ama" method="POST" style="border : none">
+                <h1 class="text-center">Agregar Materia
+                </h1>
+                <% include partials/messages %>
+        </div>
+        <div class="form-group">
+            <label class="fa fa-book" for="nombre"><b> Nombre</b></label>
+            <input class="form-control" type="text" name="nombre" required>
+        </div>
+        <div class="form-group">
+            <label for="codigo" class="fa fa-key"><b> Código</b></label>
+            <input type="number" class="form-control" name="codigo" required>
+        </div>
+
+        <div class="form-group">
+            <label for="profesor" class="fa fa-key"><b> Docente: </b></label>
+            <input list="listadocente" id="docente" name="profesor" style="width: 800px">
+            <datalist id="listadocente">
+                <% profesor.forEach(function (Users) { %>
+                <option value="<%= Users.teacher.nombre %>" data-id="<%= Users.teacher.nombre %>">
+                    <% }) %>
+            </datalist>
+        </div>
+
+        <br><br>
+        <div class="form-group" style="text-align: center">
+            <div class="col-sm-6 mx-auto"></div>
+            <input type="submit" id="checkBtn" style="background-color: #0095dd; color: white; padding: 14px 20px;
+                  margin: 8px 0; border: none;
+                  cursor: pointer; width: 50%;" value="Agregar" class="btn btn-jg">
+        </div>
+    </div>
+    </form>
+
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            function is_valid_datalist_value(idDataList, inputValue) {
+                    var option = document.querySelector("#" + idDataList + " option[value='" + inputValue + "']");
+                    if (option != null) {
+                        return option.value.length > 0;
+                    }
+                    return false;
+                }
+
+            $('#checkBtn').click(function () {
+                    if (is_valid_datalist_value('listadocente', document.getElementById('docente').value)) {
+                    } else {
+                        alert("Por favor seleccione uno de los profesores de la lista");
+                        return false;
+                    }
+
+
+            });
+        });
+
+    </script>
+
+</body>
+
+</html>

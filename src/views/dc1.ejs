@@ -1,0 +1,263 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Profile Page</title>
+    <% include partials/head %>
+    <% include partials/blockchain %>
+    <% include partials/SmartContract %>
+</head>
+
+<body>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="container">
+        <header class="text-center">
+            <div class="container text-center">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="card" style="border:none">
+                            <h2>Materia: <%= arrayMaterias[0].materia.nombre%></h2>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="card" style="border:none">
+                            <form action="/dc2/<%= arrayMaterias[0]._id%>/<%= user[0]._id %> " method="GET">
+                                <input type="submit" value="Agregar Nota">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <hr>
+        <h1 id="NotasCreadas">Notas creadas:</h1>
+        <div class="container">
+            <table>
+                <thead>
+                    <tr id="tbheader">
+
+                        <td>Nombre</td>
+                    </tr>
+                </thead>
+                <form class="GuardarCambios">
+                    <tbody> <% students.forEach(function (estudiante) { %>
+                        <tr class="tbbody">
+
+                            <td><a
+                                    href="/dc4/<%= estudiante._id%>/<%= arrayMaterias[0]._id%>"><%= estudiante.student.nombre%></a>
+                            </td>
+                            <% }) %>
+                        </tr>
+                    </tbody>
+            </table>
+            <input id="GC" type="submit" value="Guardar Cambios" disabled>
+            </form>
+        </div>
+
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="card" style="border:none">
+                        <form action="/dc3/<%= arrayMaterias[0]._id%>/<%= user[0]._id %> " method="GET">
+                            <input type="submit" value="Modificar nota">
+                        </form>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="card" style="border:none">
+                        <a href="/dc/<%=user[0]._id%>"
+                            style="background-color: #0095dd; color: white; padding: 14px 20px; margin: 8px 0; border: none; cursor: pointer; width: 50%;"
+                            class="btn btn-jg">Volver</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        var UserId = "<%= user[0]._id %>";
+        var fechaHora = new Date();
+        var fecha = fechaHora.getDate() + "/" + fechaHora.getMonth() + "/" + fechaHora.getFullYear() + "  " + fechaHora.getHours() + ":" + fechaHora.getMinutes();
+        var columnas = '<%= students.length;  %>';
+        var idmateria = '<%= arrayMaterias[0]._id %>';
+        var idestudiantes = [];
+        '<% IdStudents.forEach(function (estudiante) { %>'
+        idestudiantes.push('<%=estudiante%>');
+        '<%})%>'
+
+        var idNotasMaterias;
+        var entradas;
+
+
+        var habilitarBoton = 0;
+        try {
+            contract.methods.GetNotasGeneralesMateria(idmateria).call()
+                .then(
+                    async function (result) {
+                        creartabla(result);
+                    }
+                )
+        } catch (error) {
+            console.log("Se ha prestado un error", error);
+        }
+
+
+        async function creartabla(result, columna) {
+
+            NF = result.length;
+            idNotasMaterias = result;
+            NC = columnas;
+            var tableheader = document.getElementById('tbheader');
+
+            for (let j = 0; j < NF; j++) {
+
+                try {
+                    contract.methods.GetNotaGeneral(result[j]).call()
+                        .then(
+                            async function (RTA) {
+                                k = RTA[1] + " (" + RTA[0] + "%)";
+                                var td1 = document.createElement('td');
+
+                                var text1 = document.createTextNode(k);
+                                td1.appendChild(text1);
+                                tableheader.appendChild(td1);
+                            }
+                        )
+                } catch (error) {
+                    console.log("se ha presentado un error");
+                }
+
+            }
+
+            for (let i = 0; i < NC; i++) {
+                for (let j = 0; j < NF; j++) {
+                    prueba = NF * NC;
+                    w = j + NF * i;
+                    try {
+                        contract.methods.consultarNotaParticular(result[j], idestudiantes[i], w, w).call()
+                            .then(
+                                async function (result) {
+                                    habilitarBoton++;
+                                    var tablebody = document.getElementsByClassName('tbbody');
+                                    var td2 = document.createElement('td');
+                                    var valor = document.createElement("INPUT");
+                                    valor.setAttribute("type", "number");
+                                    valor.setAttribute("min", "1");
+                                    valor.setAttribute("max", "50");
+                                    valor.setAttribute("class", "center-block");
+                                    valor.setAttribute("step", "1");
+                                    valor.setAttribute("style", "width: 60px;");
+                                    if (result[0] == 123) { } else {
+                                        valor.setAttribute("value", parseFloat(result[0]));
+                                    }
+                                    valor.setAttribute("id", result[1]);
+                                    td2.appendChild(valor);
+                                    tablebody[i].appendChild(td2);
+                                    if (habilitarBoton >= prueba) {
+                                        document.getElementById("GC").disabled = false;
+                                    }
+
+                                }
+                            )
+                    } catch (error) {
+                        console.log("se ha presentado un error", error);
+                    }
+
+
+                }
+
+            }
+
+
+        }
+
+
+
+        $('.GuardarCambios').on('submit', async function (event) {
+            event.preventDefault();
+            var a = 0;
+            entradas = document.getElementsByClassName("center-block");
+            for (let i = 0; i < entradas.length; i++) {
+                var x = document.getElementById(i);
+                if (x.value > 50 || x.value < 0) {
+                    a++;
+                } else {
+
+                }
+            }
+            if (a == 0) {
+                try {
+                    web3.eth.personal.getAccounts().then(async function (accounts) {
+                        await ModificarNotas(accounts)
+
+                    })
+                } catch (error) {
+                    console.log("se ha presentado un error", error);
+                }
+
+            } else {
+                alert('Las notas ingresadas deben estar dentro del rango');
+            }
+
+
+
+            async function ModificarNotas(accounts) {
+                var hasta = 0;
+                var desde = 0;
+                for (let j = 0; j < entradas.length; j++) {
+                    var x = document.getElementById(j);
+                    if (x.value != x.defaultValue) {
+                        hasta++;
+                    }
+
+                }
+                for (let i = 0; i < entradas.length; i++) {
+                    var x = document.getElementById(i);
+                    if (x.value == x.defaultValue) {
+
+                    } else {
+                        var fechaHora = new Date();
+                        var fecha = fechaHora.getDate() + "/" + fechaHora.getMonth() + "/" + fechaHora.getFullYear() + "  " + fechaHora.getHours() + ":" + fechaHora.getMinutes();
+                        if (x.value == "") {
+                            try {
+                                contract.methods.ModificarNotaParticular(123, idNotasMaterias[i % idNotasMaterias.length], idestudiantes[Math.trunc(i / idNotasMaterias.length)], fecha, UserId).send({ from: accounts[0] },
+                                    async function (error, transactionHash) {
+                                        console.log(error);
+                                        desde++;
+                                        if (desde >= hasta) {
+
+                                            location.reload();
+                                        }
+
+                                    });
+                            } catch (error) {
+                                console.log("se ha presentado un error", error);
+                            }
+
+                        } else {
+                            try {
+                                contract.methods.ModificarNotaParticular(x.value, idNotasMaterias[i % idNotasMaterias.length], idestudiantes[Math.trunc(i / idNotasMaterias.length)], fecha, UserId).send({ from: accounts[0] },
+                                    async function (error, transactionHash) {
+                                        console.log(error);
+                                        desde++;
+                                        if (desde >= hasta) {
+                                            location.reload();
+                                        }
+                                    });
+                            } catch (error) {
+                                console.log("se ha presentado un error", error)
+                            }
+                        }
+
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

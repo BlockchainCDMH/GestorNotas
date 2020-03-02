@@ -1,0 +1,54 @@
+
+<html lang="en">
+
+<head>
+    <% include partials/head %>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="container">
+            <input id="myInput" type="text" placeholder="Search..">
+            <br><br>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <td>Nombre</td>
+                    <td>Correo</td>
+                    <td>Telefono</td>
+                    <td>Dirección</td>
+                </tr>
+            </thead>
+            <tbody id="myTable">
+                <% students.forEach(function (Users) { %>
+                    <tr>
+                        <td><a href="/aec/<%= Users._id%>"><%= Users.student.nombre%> </a></td>
+                        <td> <%= Users.student.phone%> </td>
+                        <td> <%= Users.student.email%> </td>
+                        <td> <%= Users.student.dir%> </td>
+                    </tr>
+                    <% }) %>
+
+            </tbody>
+        </table>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $("#myInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#myTable tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>

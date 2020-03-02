@@ -1,0 +1,5 @@
+.github/
+LICENSE
+bs-config.json
+build/
+node_modules/

@@ -1,0 +1,474 @@
+<script>
+        if (typeof web3 !== 'undefined') {
+            web3 = new Web3(web3.currentProvider);
+        } else {
+            web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
+        }
+		var contractAbi =[
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "GetNumeroDeNotasGenerales",
+		"outputs": [
+			{
+				"name": "Notas",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_IdNotaGeneral",
+				"type": "uint256"
+			},
+			{
+				"name": "_IdEstudiate",
+				"type": "string"
+			}
+		],
+		"name": "IdentificadorNotaparticular",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_IdNotaGeneral",
+				"type": "uint256"
+			},
+			{
+				"name": "_fecha",
+				"type": "string"
+			},
+			{
+				"name": "_IdResponsable",
+				"type": "string"
+			}
+		],
+		"name": "ModificarEstadoNotaGeneral",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_IdEstudiate",
+				"type": "string"
+			},
+			{
+				"name": "_IdMateria",
+				"type": "string"
+			},
+			{
+				"name": "_IdNotaGeneral",
+				"type": "uint256"
+			}
+		],
+		"name": "ConsultarHistorialNotas",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256[]"
+			},
+			{
+				"name": "",
+				"type": "uint256[]"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "GetNumeroDeNotasGeneralesActivas",
+		"outputs": [
+			{
+				"name": "Notas",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_ValorNota",
+				"type": "uint256"
+			},
+			{
+				"name": "_IdNotaGeneral",
+				"type": "uint256"
+			},
+			{
+				"name": "_IdEstudiate",
+				"type": "string"
+			},
+			{
+				"name": "_fecha",
+				"type": "string"
+			},
+			{
+				"name": "_IdResponsable",
+				"type": "string"
+			}
+		],
+		"name": "ModificarNotaParticular",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "NumeroDeNotaGeneral",
+				"type": "uint256"
+			}
+		],
+		"name": "GetNotaGeneral",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "bool"
+			},
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_IdNotaGeneral",
+				"type": "uint256"
+			}
+		],
+		"name": "consultarNotageneralH",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "bool"
+			},
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_IdNotaparticular",
+				"type": "uint256"
+			}
+		],
+		"name": "consultarNotaParticularH",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "IdMateriaR",
+				"type": "string"
+			}
+		],
+		"name": "GetNotasTotalesMateria",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256[]"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_IdNotaGeneral",
+				"type": "uint256"
+			},
+			{
+				"name": "_porcentaje",
+				"type": "uint256"
+			},
+			{
+				"name": "_fecha",
+				"type": "string"
+			},
+			{
+				"name": "_IdResponsable",
+				"type": "string"
+			}
+		],
+		"name": "ModificarPorcentajeNotaGeneral",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "IdMateriaR",
+				"type": "string"
+			}
+		],
+		"name": "GetNotasGeneralesMateria",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256[]"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_IdNotaGeneral",
+				"type": "uint256"
+			},
+			{
+				"name": "_IdEstudiateConsulta",
+				"type": "string"
+			},
+			{
+				"name": "IdNotaIndividual",
+				"type": "uint256"
+			},
+			{
+				"name": "Dummy",
+				"type": "uint256"
+			}
+		],
+		"name": "consultarNotaParticular",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_IdNotaGeneral",
+				"type": "uint256"
+			},
+			{
+				"name": "_Nombre",
+				"type": "string"
+			},
+			{
+				"name": "_fecha",
+				"type": "string"
+			},
+			{
+				"name": "_IdResponsable",
+				"type": "string"
+			}
+		],
+		"name": "ModificarNombreNotaGeneral",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_porcentaje",
+				"type": "uint256"
+			},
+			{
+				"name": "_IdMateria",
+				"type": "string"
+			},
+			{
+				"name": "_Nombre",
+				"type": "string"
+			},
+			{
+				"name": "_fecha",
+				"type": "string"
+			},
+			{
+				"name": "_IdResponsable",
+				"type": "string"
+			}
+		],
+		"name": "CrearNotaGeneral",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_ValorNota",
+				"type": "uint256"
+			},
+			{
+				"name": "_IdNotaGeneral",
+				"type": "uint256"
+			},
+			{
+				"name": "_IdEstudiate",
+				"type": "string"
+			},
+			{
+				"name": "_fecha",
+				"type": "string"
+			},
+			{
+				"name": "_IdResponsable",
+				"type": "string"
+			}
+		],
+		"name": "CrearNotaParticular",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+];	
+
+var contractAddress = '0xAF7b0ea0A9a57E853F1B9076A3a57D2f9571bf72';
+        // Set the Contract
+        var contract = new web3.eth.Contract(contractAbi, contractAddress);
+
+    </script>
