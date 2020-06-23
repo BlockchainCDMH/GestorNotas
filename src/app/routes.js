@@ -172,17 +172,47 @@ module.exports = (app, passport) => {
 			}
 		}
 
-		res.render('aec3', { user: user, materias: MateriasNoInscritas });
+		res.render('aec3', { user: user, materias: MateriasNoInscritas, message: "" });
 	});
 
 	app.get('/aec3/:usuario_id/:materia_id', isLoggedIn, async (req, res) => {
-		const user = await Users.find({ _id: req.params.usuario_id });
-		const materias = await Users.find({ 'materia.nombre': { $regex: ".*" } });
 		var newUser = new Users();
 		newUser.materiaEstudiante.estudianteid = req.params.usuario_id;
 		newUser.materiaEstudiante.materiaid = req.params.materia_id;
-		newUser.save();
-		res.render('aec3', { user: user, materias: materias });
+		var promise = newUser.save().then(async function (doc) {
+
+			const user = await Users.find({ _id: doc.materiaEstudiante.estudianteid });
+			const materiaAgregada =  await Users.findById(doc.materiaEstudiante.materiaid);
+			const materiasestudiantes = await Users.find({ 'materiaEstudiante.estudianteid': doc.materiaEstudiante.estudianteid });
+			const AllMaterias = await Users.find({ 'materia.nombre': { $regex: ".*" } });
+
+			var MateriasVistas = [];
+			for (let i = 0; i < materiasestudiantes.length; i++) {
+				const materiaEstudiante = materiasestudiantes[i];
+				var IdMateria = await Users.findById(materiaEstudiante.materiaEstudiante.materiaid);
+				MateriasVistas.push(IdMateria);
+			}
+
+			var MateriasNoInscritas = [];
+			for (let i = 0; i < AllMaterias.length; i++) {
+				const CAllMaterias = AllMaterias[i];
+				var a = 0;
+				for (let j = 0; j < MateriasVistas.length; j++) {
+					const CMateriasVistas = MateriasVistas[j];
+					if (String(CAllMaterias._id) == String(CMateriasVistas._id) || String(CAllMaterias._id) == String(doc.materiaEstudiante.materiaid)) {
+						a = 1;
+					}
+
+				}
+				if (a == 1) { }
+				else {
+					var miVar = await Users.findById(CAllMaterias._id);
+					MateriasNoInscritas.push(miVar)
+				}
+			}
+			res.render('aec3', { user: user, materias: MateriasNoInscritas, message: materiaAgregada.materia.nombre});
+
+		});
 	});
 
 

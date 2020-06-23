@@ -15,8 +15,8 @@
             <input id="myInput" type="text" placeholder="Search..">
             <br><br>
         </div>
-
-        <table>
+ 
+        <table id="GenericTable">
             <thead>
                 <tr>
                     <td>Nombre</td>
@@ -25,7 +25,7 @@
                     <td>Dirección</td>
                 </tr>
             </thead>
-            <tbody id="myTable">
+            <tbody id="myTable" >
                 <% students.forEach(function (Users) { %>
                     <tr>
                         <td><a href="/aec/<%= Users._id%>"><%= Users.student.nombre%> </a></td>

@@ -1,4 +1,3 @@
-
 <html>
 
 <head>
@@ -38,7 +37,7 @@
             </div>
         </div>
 
-        <a href="/aec" class="btn btn-light btn-sm">
+        <a href="/aec/<%=user[0]._id%>" class="btn btn-light btn-sm">
             Regresar
         </a>
     </div>
@@ -76,6 +75,13 @@
                 </div>
             </div>
         </div>
+
+        <script>
+            var mensaje = "<%=message%>";
+            if (mensaje != "") {
+                alert("Se ha agregado " + mensaje + " a la lista de materias vistas por el estudiante");
+            }
+        </script>
 </body>
 
 </html>

@@ -49,6 +49,7 @@
     </div>
     <div class="container col-xs-12 col-sm-8 col-sm-push-2" style="margin-top: 130px">
       <h1 class="text-center">Historial de materia</h1>
+      <h1 id="Loading">Cargando la información...</h1>
     </div>
   </div>
   <div id="MateriasRow">
@@ -394,6 +395,7 @@
           tr1.appendChild(td1);
 
           tablebody.appendChild(tr1);
+          document.getElementById("Loading").setAttribute("style", "display: none;visibility: hidden;");
         }
 
       }

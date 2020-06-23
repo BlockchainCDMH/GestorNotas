@@ -41,7 +41,8 @@
     <h2>Materias</h2>
   </div>
   <div style="overflow:auto;overflow: scroll;overflow-y:hidden;overflow-x: scroll;">
-    <table id="customers">
+    <h1 id="Loading">Cargando datos...</h1>
+    <table id="customers"  style= "display: none;visibility: hidden;">
       <thead id="thead">
         <tr id="thead1">
           <th rowspan="2" style="text-align:center">ID</td>
@@ -335,6 +336,9 @@
       }
 
       tablebody[j].appendChild(td2);
+      document.getElementById("Loading").setAttribute("style","display: none;visibility: hidden;");
+      document.getElementById("customers").setAttribute("style","display: block;");
+      document.getElementById("customers").setAttribute("style", "visibility: visible;");
     }
 
 

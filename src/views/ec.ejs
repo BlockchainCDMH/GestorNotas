@@ -24,35 +24,35 @@
                 </div>
             </div>
         </header>
+    </div>
+    <hr>
+    <h1 id="Loading">Se esta cargando la información...</h1>
+    <div style="width: 900px;overflow:auto;overflow: scroll;overflow-y:hidden;overflow-x: scroll;">
+        <table id="customers">
+            <thead id="thead">
+                <tr id="thead1">
+                    <th style="text-align:center" rowspan="2">Asignatura</th>
+                </tr>
+            </thead>
+            <tbody>
+                <%arrayMaterias.forEach(function (materia) {%>
+                <tr class="tbody">
+                    <td style="text-align:center"> <a href="ec2/<%=materia._id%>"> <%=materia.materia.nombre%></a>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
 
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-sm-8">
 
-        <hr>
-        <div style="width: 800px;overflow:auto;overflow: scroll;overflow-y:hidden;overflow-x: scroll;">
-            <table id="customers">
-                <thead id="thead">
-                    <tr id="thead1">
-                        <th style="text-align:center" rowspan="2">Asignatura</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <%arrayMaterias.forEach(function (materia) {%>
-                    <tr class="tbody">
-                        <td style="text-align:center"> <a href="ec2/<%=materia._id%>"> <%=materia.materia.nombre%></a>
-                        </td>
-                    </tr>
-                    <% }) %>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="container text-center">
-            <div class="row">
-                <div class="col-sm-8">
-
-                </div>
             </div>
-
         </div>
+
+    </div>
 
 </body>
 
@@ -307,6 +307,7 @@
             }
 
             tablebody[j].appendChild(td2);
+            document.getElementById("Loading").setAttribute("style", "display: none;visibility: hidden;");
         }
 
 
